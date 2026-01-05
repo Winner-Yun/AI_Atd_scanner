@@ -1,0 +1,60 @@
+#before intall requirement.txt run this command ( pip install "locatefile/dlib-19.24.1-cp311-cp311-win_amd64.whl" )
+
+numpy==1.26.4
+opencv-python==4.8.1.78
+dlib
+face-recognition==1.3.0
+Pillow
+pandas
+imutils
+flask
+pymongo
+
+
+# numpy==1.26.4
+
+# Handles numbers and arrays efficiently.
+
+# Think of it as a supercharged version of Python lists for math and data.
+
+# opencv-python==4.8.1.78
+
+# For working with images and videos.
+
+# Can detect faces, objects, apply filters, or read/write images/videos.
+
+# dlib
+
+# A toolkit for machine learning and computer vision.
+
+# Often used for face detection, facial landmarks, and face recognition.
+
+# face-recognition==1.3.0
+
+# Makes it easy to recognize and manipulate faces in images.
+
+# Built on top of dlib, but simpler to use.
+
+# Pillow
+
+# For opening, editing, and saving images.
+
+# Can resize, crop, add text, or apply filters.
+
+# pandas
+
+# For working with tables of data (like Excel).
+
+# Helps organize, analyze, and manipulate structured data.
+
+# imutils
+
+# Helper functions for OpenCV.
+
+# Makes tasks like resizing, rotating, and handling images easier.
+
+# flask
+
+# A lightweight framework to create web applications in Python.
+
+# Lets you build a website or API to serve your face recognition app.

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register Identity</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Rajdhani:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary-color: #00f2ff;
+        --bg-dark: #0f172a;
+        --card-bg: #1e293b;
+        --input-bg: #334155;
+        --text-main: #f1f5f9;
+      }
+      body {
+        background-color: var(--bg-dark);
+        color: var(--text-main);
+        font-family: "Rajdhani", sans-serif;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      /* Navbar */
+      .navbar {
+        background: rgba(30, 41, 59, 0.95);
+        border-bottom: 1px solid var(--primary-color);
+        box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+      }
+      .navbar-brand {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 700;
+        color: var(--primary-color) !important;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+      /* Card */
+      .card-custom {
+        background-color: var(--card-bg);
+        border: 1px solid var(--primary-color);
+        box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
+        border-radius: 8px;
+      }
+      .card-header-tech {
+        background: rgba(0, 242, 255, 0.1);
+        border-bottom: 1px solid var(--primary-color);
+        color: var(--primary-color);
+        font-family: "JetBrains Mono", monospace;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 15px;
+      }
+      /* Form */
+      .form-label {
+        color: var(--primary-color);
+        font-weight: 600;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.9rem;
+      }
+      .form-control,
+      .form-select {
+        background-color: var(--input-bg);
+        border: 1px solid #475569;
+        color: #fff;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .form-control:focus,
+      .form-select:focus {
+        background-color: var(--input-bg);
+        border-color: var(--primary-color);
+        color: #fff;
+        box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+      }
+
+      .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+        opacity: 1;
+      }
+
+      /* Tabs */
+      .nav-tabs .nav-link {
+        color: rgba(255, 255, 255, 0.5);
+        border: 1px solid transparent;
+        font-family: "JetBrains Mono";
+      }
+      .nav-tabs .nav-link.active {
+        background-color: var(--input-bg);
+        color: var(--primary-color);
+        border-color: #475569 #475569 var(--input-bg);
+        border-bottom: 1px solid var(--input-bg) !important;
+      }
+      .nav-tabs {
+        border-bottom: 1px solid #475569;
+      }
+
+      /* Camera Preview */
+      #camera-preview-container {
+        display: none;
+        border: 2px solid var(--primary-color);
+        background: #000;
+        margin-bottom: 20px;
+        position: relative;
+        overflow: hidden;
+        border-radius: 4px;
+        aspect-ratio: 4/3;
+      }
+      #preview-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      /* Buttons */
+      .btn-tech {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: bold;
+        text-transform: uppercase;
+        transition: all 0.3s;
+      }
+      .btn-open-cam {
+        background: transparent;
+        border: 2px solid #3b82f6;
+        color: #3b82f6;
+      }
+      .btn-open-cam:hover {
+        background: #3b82f6;
+        color: white;
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+      }
+      .btn-capture {
+        background: #10b981;
+        border: none;
+        color: #000;
+      }
+      .btn-capture:hover {
+        background: #059669;
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+      }
+      .btn-cancel {
+        border: 1px solid #ff4444;
+        color: #ff4444;
+      }
+      .btn-cancel:hover {
+        background: #ff4444;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="{{ url_for('main.index') }}">
+          <i class="fa-solid fa-face-viewfinder me-2"></i> Smart Attendance
+        </a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+          <div class="card card-custom">
+            <div class="card-header card-header-tech text-center">
+              <i class="fa-solid fa-user-plus me-2"></i> New Registration
+            </div>
+
+            <div class="card-body p-4">
+              {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %} {% for category, message in messages %}
+              <div class="alert alert-{{ category }} mb-3" role="alert">
+                {{ message }}
+              </div>
+              {% endfor %} {% endif %} {% endwith %}
+
+              <form
+                action="{{ url_for('main.add_user') }}"
+                method="POST"
+                enctype="multipart/form-data"
+                id="register-form"
+              >
+                <div class="mb-3">
+                  <label class="form-label">Student Name / ID</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="name"
+                    name="name"
+                    required
+                    placeholder="Full Name"
+                    autocomplete="off"
+                  />
+                </div>
+
+                <div class="mb-4">
+                  <label class="form-label">Assign to Class</label>
+                  <select
+                    name="class_id"
+                    id="class_id"
+                    class="form-select"
+                    required
+                  >
+                    <option value="" disabled selected>
+                      -- Select Class --
+                    </option>
+                    {% for class_id, info in classes.items() %}
+                    <option value="{{ class_id }}">{{ class_id }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <ul class="nav nav-tabs mb-4" id="methodTab" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button
+                      class="nav-link active"
+                      id="camera-tab"
+                      data-bs-toggle="tab"
+                      data-bs-target="#camera-pane"
+                      type="button"
+                      role="tab"
+                      onclick="setMethod('camera')"
+                    >
+                      <i class="fa-solid fa-camera me-2"></i>Camera
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button
+                      class="nav-link"
+                      id="upload-tab"
+                      data-bs-toggle="tab"
+                      data-bs-target="#upload-pane"
+                      type="button"
+                      role="tab"
+                      onclick="setMethod('upload')"
+                    >
+                      <i class="fa-solid fa-upload me-2"></i>Upload (5 Photos)
+                    </button>
+                  </li>
+                </ul>
+
+                <div class="tab-content" id="myTabContent">
+                  <div
+                    class="tab-pane fade show active"
+                    id="camera-pane"
+                    role="tabpanel"
+                  >
+                    <div class="text-center">
+                      <div id="camera-preview-container">
+                        <img id="preview-image" src="" alt="Preview" />
+                      </div>
+                      <div id="instruction-text" class="mb-3 text-white-50">
+                        Click 'Open Camera' to verify face before saving.
+                      </div>
+                      <button
+                        type="button"
+                        class="btn btn-tech btn-open-cam w-100 mb-2"
+                        id="btn-open"
+                        onclick="openCamera()"
+                      >
+                        <i class="fa-solid fa-video me-2"></i> Open Camera
+                      </button>
+                      <button
+                        type="submit"
+                        class="btn btn-tech btn-capture w-100 mb-2"
+                        id="btn-capture"
+                      >
+                        <i class="fa-solid fa-camera me-2"></i> Start Capture (5
+                        Frames)
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="tab-pane fade" id="upload-pane" role="tabpanel">
+                    <div class="mb-3">
+                      <label class="form-label small text-info"
+                        >Upload exactly 5 images of the student:</label
+                      >
+                      <input
+                        type="file"
+                        name="user_images"
+                        id="user_images"
+                        class="form-control"
+                        multiple
+                        accept="image/*"
+                        onchange="checkFiles()"
+                      />
+                      <div class="form-text text-white-50">
+                        Supported: JPG, PNG. Make sure face is clear.
+                      </div>
+                    </div>
+                    <button
+                      type="submit"
+                      class="btn btn-tech btn-capture w-100 mb-2"
+                      id="btn-upload"
+                      style="display: none; background: #00f2ff; color: black"
+                    >
+                      <i class="fa-solid fa-cloud-arrow-up me-2"></i> Upload &
+                      Register
+                    </button>
+                  </div>
+                </div>
+
+                <a
+                  href="{{ url_for('main.index') }}"
+                  class="btn btn-cancel w-100 mt-2"
+                >
+                  Cancel
+                </a>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      let currentMethod = "camera";
+
+      function setMethod(method) {
+        currentMethod = method;
+        if (method === "upload") {
+          document.getElementById("user_images").required = true;
+        } else {
+          document.getElementById("user_images").required = false;
+          document.getElementById("user_images").value = "";
+        }
+      }
+
+      function openCamera() {
+        var nameInput = document.getElementById("name").value;
+        var classInput = document.getElementById("class_id").value;
+
+        if (nameInput.trim() === "" || classInput === "") {
+          alert("Please enter a Name and select a Class first!");
+          return;
+        }
+
+        document.getElementById("instruction-text").style.display = "none";
+        document.getElementById("btn-open").style.display = "none";
+        document.getElementById("camera-preview-container").style.display =
+          "block";
+        document.getElementById("preview-image").src =
+          "{{ url_for('main.preview_feed') }}";
+        document.getElementById("btn-capture").style.display = "block";
+      }
+
+      function checkFiles() {
+        const input = document.getElementById("user_images");
+        const btn = document.getElementById("btn-upload");
+        if (input.files.length === 5) {
+          btn.style.display = "block";
+        } else {
+          btn.style.display = "none";
+          alert("Please select exactly 5 images.");
+          input.value = "";
+        }
+      }
+    </script>
+  </body>
+</html>

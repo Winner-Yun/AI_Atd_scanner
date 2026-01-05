@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Edit Configuration</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=JetBrains+Mono:wght@400&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary: #00f2ff;
+        --glass-bg: rgba(30, 41, 59, 0.7);
+      }
+      body {
+        background: #0f172a;
+        color: #fff;
+        font-family: "Rajdhani";
+      }
+      .glass-card {
+        background: var(--glass-bg);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+      }
+      .form-control-tech,
+      .form-select-tech {
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid #475569;
+        color: white;
+      }
+      .form-control-tech::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+        opacity: 1;
+      }
+      .form-control-tech:focus {
+        background: rgba(0, 0, 0, 0.5);
+        border-color: var(--primary);
+        color: white;
+      }
+      .form-control-tech::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        opacity: 0.6;
+        cursor: pointer;
+      }
+      .form-control-tech::-webkit-calendar-picker-indicator:hover {
+        opacity: 1;
+      }
+      .table-tech {
+        --bs-table-bg: transparent;
+        color: #e2e8f0;
+        border-color: rgba(255, 255, 255, 0.1);
+      }
+      .table-tech th {
+        color: var(--primary);
+        font-family: "JetBrains Mono";
+        text-transform: uppercase;
+        font-size: 0.85rem;
+      }
+      .btn-neon {
+        border: 1px solid var(--primary);
+        color: var(--primary);
+        transition: 0.3s;
+      }
+      .btn-neon:hover {
+        background: var(--primary);
+        color: black;
+      }
+      /* Modal Styles */
+      .modal-content {
+        background-color: #1e293b;
+        border: 1px solid var(--primary);
+        color: #fff;
+      }
+      .modal-header,
+      .modal-footer {
+        border-color: rgba(255, 255, 255, 0.1);
+      }
+      .btn-close {
+        filter: invert(1);
+      }
+    </style>
+  </head>
+  <body class="p-5">
+    <div class="container">
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div class="alert alert-{{ category }} mb-4">{{ message }}</div>
+      {% endfor %} {% endif %} {% endwith %}
+
+      <div class="d-flex align-items-center justify-content-between mb-4">
+        <h3>
+          <span class="text-light">CLASS:</span>
+          <span class="text-info">{{ class_id }}</span>
+        </h3>
+        <a
+          href="{{ url_for('main.manage_classes') }}"
+          class="btn btn-outline-light btn-sm"
+          >Back</a
+        >
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="glass-card p-4 h-100">
+            <h5
+              class="text-white mb-3 border-bottom border-white border-opacity-10 pb-2"
+            >
+              Add Schedule
+            </h5>
+            <form method="POST">
+              <div class="mb-3">
+                <label class="small text-info">SUBJECT</label>
+                <input
+                  type="text"
+                  name="subject"
+                  class="form-control form-control-tech"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="small text-info">TEACHER</label>
+                <input
+                  type="text"
+                  name="teacher"
+                  class="form-control form-control-tech"
+                  required
+                />
+              </div>
+              <div class="row g-2 mb-3">
+                <div class="col">
+                  <label class="small text-info">START (24h)</label>
+                  <input
+                    type="time"
+                    name="start_time"
+                    class="form-control form-control-tech"
+                    required
+                  />
+                </div>
+                <div class="col">
+                  <label class="small text-info">LATE (24h)</label>
+                  <input
+                    type="time"
+                    name="late_time"
+                    class="form-control form-control-tech"
+                    required
+                  />
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary w-100 fw-bold">
+                ADD SCHEDULE
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div class="col-md-8">
+          <div class="glass-card p-0 overflow-hidden mb-4">
+            <div
+              class="p-3 bg-black bg-opacity-25 border-bottom border-white border-opacity-10"
+            >
+              <h6 class="m-0 text-white font-monospace">SESSION SCHEDULES</h6>
+            </div>
+            <table class="table table-tech table-hover m-0">
+              <thead class="bg-black bg-opacity-25">
+                <tr>
+                  <th class="ps-4">Subject</th>
+                  <th>Teacher</th>
+                  <th>Start</th>
+                  <th>Late</th>
+                  <th class="text-end pe-4">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for subj in class_data.subjects %}
+                <tr>
+                  <td class="ps-4 text-light">{{ subj.subject }}</td>
+                  <td class="text-light">{{ subj.teacher }}</td>
+                  <td class="font-monospace text-light">
+                    {{ subj.start_time }}
+                  </td>
+                  <td class="font-monospace text-warning">
+                    {{ subj.late_time }}
+                  </td>
+                  <td class="text-end pe-4">
+                    <button
+                      class="btn btn-sm btn-outline-warning border-0 me-1"
+                      onclick="openEditModal('{{ loop.index0 }}', '{{ subj.subject }}', '{{ subj.teacher }}', '{{ subj.start_time }}', '{{ subj.late_time }}')"
+                    >
+                      <i class="fa-solid fa-pen"></i>
+                    </button>
+                    <a
+                      href="{{ url_for('main.delete_subject', class_id=class_id, idx=loop.index0) }}"
+                      class="btn btn-sm btn-danger border-0"
+                      onclick="return confirm('Delete this schedule?')"
+                      ><i class="fa-solid fa-xmark"></i
+                    ></a>
+                  </td>
+                </tr>
+                {% else %}
+                <tr class="text-center">
+                  <td colspan="5" class="py-4 text-light">
+                    No schedules configured.
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="glass-card p-4">
+            <h5
+              class="text-white mb-3 border-bottom border-white border-opacity-10 pb-2 d-flex justify-content-between"
+            >
+              <span>Enrolled Students</span>
+              <span class="badge bg-secondary"
+                >{{ class_data.students|length }}</span
+              >
+            </h5>
+
+            <form
+              action="{{ url_for('main.enroll_existing_student', class_id=class_id) }}"
+              method="POST"
+              class="d-flex gap-2 mb-3"
+            >
+              <select
+                name="student_name"
+                class="form-select form-select-tech"
+                required
+              >
+                <option value="" disabled selected>
+                  Select existing student...
+                </option>
+                {% for student in all_students %} {% if student not in
+                class_data.students %}
+                <option value="{{ student }}" class="text-black">
+                  {{ student }}
+                </option>
+                {% endif %} {% endfor %}
+              </select>
+              <button type="submit" class="btn btn-neon px-4">ADD</button>
+            </form>
+
+            <div
+              class="p-3 bg-black bg-opacity-25 rounded border border-secondary border-opacity-25"
+            >
+              {% if class_data.students %}
+              <div class="d-flex flex-wrap gap-2">
+                {% for student in class_data.students %}
+                <span
+                  class="badge bg-dark border border-secondary p-2 d-flex align-items-center gap-2"
+                >
+                  <span
+                    ><i class="fa-solid fa-user text-info"></i> {{ student
+                    }}</span
+                  >
+                  <a
+                    href="{{ url_for('main.remove_student_route', class_id=class_id, student_name=student) }}"
+                    class="text-danger ms-1 text-decoration-none"
+                    onclick="return confirm('Remove {{ student }} from {{ class_id }}?\n\nThis will ALSO clear their attendance logs for this class.')"
+                  >
+                    <i class="fa-solid fa-xmark"></i>
+                  </a>
+                </span>
+                {% endfor %}
+              </div>
+              {% else %}
+              <p class="text-light small m-0 fst-italic">
+                No students enrolled yet.
+              </p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit Schedule</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="editForm" method="POST">
+              <div class="mb-3">
+                <label class="small text-info">SUBJECT</label>
+                <input
+                  type="text"
+                  name="subject"
+                  id="edit_subject"
+                  class="form-control form-control-tech"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="small text-info">TEACHER</label>
+                <input
+                  type="text"
+                  name="teacher"
+                  id="edit_teacher"
+                  class="form-control form-control-tech"
+                  required
+                />
+              </div>
+              <div class="row g-2 mb-3">
+                <div class="col">
+                  <label class="small text-info">START</label>
+                  <input
+                    type="time"
+                    name="start_time"
+                    id="edit_start_time"
+                    class="form-control form-control-tech"
+                    required
+                  />
+                </div>
+                <div class="col">
+                  <label class="small text-info">LATE</label>
+                  <input
+                    type="time"
+                    name="late_time"
+                    id="edit_late_time"
+                    class="form-control form-control-tech"
+                    required
+                  />
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">
+                Update Schedule
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      function convertTo24Hour(timeStr) {
+        if (!timeStr) return "";
+        if (timeStr.includes("AM") || timeStr.includes("PM")) {
+          const [time, modifier] = timeStr.split(" ");
+          let [hours, minutes] = time.split(":");
+          if (hours === "12") {
+            hours = "00";
+          }
+          if (modifier === "PM") {
+            hours = parseInt(hours, 10) + 12;
+          }
+          return `${hours}:${minutes}`;
+        }
+        return timeStr;
+      }
+
+      function openEditModal(index, subject, teacher, start, late) {
+        document.getElementById("edit_subject").value = subject;
+        document.getElementById("edit_teacher").value = teacher;
+        document.getElementById("edit_start_time").value =
+          convertTo24Hour(start);
+        document.getElementById("edit_late_time").value = convertTo24Hour(late);
+
+        const actionUrl =
+          "{{ url_for('main.update_subject', class_id=class_id, idx=0) }}".replace(
+            "/0",
+            "/" + index
+          );
+        document.getElementById("editForm").action = actionUrl;
+
+        new bootstrap.Modal(document.getElementById("editModal")).show();
+      }
+    </script>
+  </body>
+</html>
